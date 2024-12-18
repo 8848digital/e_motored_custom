@@ -129,9 +129,9 @@ app_license = "mit"
 # ---------------
 # Override standard doctype classes
 
-# override_doctype_class = {
-# 	"ToDo": "custom_app.overrides.CustomToDo"
-# }
+override_doctype_class = {
+	"Production Plan": "e_motored_custom.e_motored_custom.e_motered_manufacturing.production_plan.OverrideProductionPlan"
+}
 
 # Document Events
 # ---------------
@@ -175,7 +175,8 @@ app_license = "mit"
 # ------------------------------
 #
 # override_whitelisted_methods = {
-# 	"frappe.desk.doctype.event.event.get_events": "e_motored_custom.event.get_events"
+#     "erpnext.manufacturing.doctype.production_plan.production_plan.make_work_order":"e_motored_custom/e_motored_custom/e_motered_manufacturing/production_plan.make_work_order",
+# 	# "frappe.desk.doctype.event.event.get_events": "e_motored_custom.event.get_events"
 # }
 #
 # each overriding function accepts a `data` argument;
