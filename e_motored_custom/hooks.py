@@ -130,20 +130,19 @@ app_license = "mit"
 # Override standard doctype classes
 
 override_doctype_class = {
-	"Production Plan": "e_motored_custom.e_motored_custom.e_motered_manufacturing.production_plan.OverrideProductionPlan"
+	"Production Plan": "e_motored_custom.e_motored_custom.e_motered_manufacturing.production_plan.OverrideProductionPlan",
+    "Work Order": "e_motored_custom.e_motored_custom.e_motered_manufacturing.work_order.OverrideWorkOrder"
 }
 
 # Document Events
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-# 	}
-# }
+doc_events = {
+	"Job Card": {
+		"validate": "e_motored_custom.e_motored_custom.e_motered_manufacturing.job_card.change_job_status",
+	}
+}
 
 # Scheduled Tasks
 # ---------------
