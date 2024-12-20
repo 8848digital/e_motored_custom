@@ -138,11 +138,11 @@ override_doctype_class = {
 # ---------------
 # Hook on document methods and events
 
-doc_events = {
-	"Job Card": {
-		"validate": "e_motored_custom.e_motored_custom.e_motered_manufacturing.job_card.change_job_status",
-	}
-}
+# doc_events = {
+# 	"Job Card": {
+# 		"validate": "e_motored_custom.e_motored_custom.e_motered_manufacturing.job_card.change_job_status",
+# 	}
+# }
 
 # Scheduled Tasks
 # ---------------
