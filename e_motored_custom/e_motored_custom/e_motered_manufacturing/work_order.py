@@ -22,7 +22,7 @@ class OverrideWorkOrder(WorkOrder):
         enable_capacity_planning = not cint(manufacturing_settings_doc.disable_capacity_planning)
         plan_days = cint(manufacturing_settings_doc.capacity_planning_for_days) or 30
         for op in range(self.qty):
-            op_id = random_string(4) #'HNRirG'
+            op_id = random_string(6) #'HNRirG'
             for index, row in enumerate(self.operations):
                 row.custom_op_group_id = op_id
                 # qty = self.qty
@@ -84,6 +84,8 @@ def create_job_card(work_order, row, enable_capacity_planning=False, auto_create
             "custom_op_group_id":f"""{row.custom_op_group_id}-{row.get("sequence_id")}"""
         }
     )
+    if row.idx == 1:
+        doc.append("time_logs",{"completed_qty":1})
 
     if work_order.transfer_material_against == "Job Card" and not work_order.skip_transfer:
         doc.get_required_items()
