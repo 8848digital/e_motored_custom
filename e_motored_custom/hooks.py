@@ -130,7 +130,7 @@ app_license = "mit"
 # Override standard doctype classes
 
 override_doctype_class = {
-	"Production Plan": "e_motored_custom.e_motored_custom.e_motered_manufacturing.production_plan.OverrideProductionPlan",
+	# "Production Plan": "e_motored_custom.e_motored_custom.e_motered_manufacturing.production_plan.OverrideProductionPlan",
     "Work Order": "e_motored_custom.e_motored_custom.e_motered_manufacturing.work_order.OverrideWorkOrder"
 }
 

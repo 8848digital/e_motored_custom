@@ -7,6 +7,8 @@ from frappe.utils import (
     cint
 )
 
+from frappe.utils import random_string
+
 from erpnext.manufacturing.doctype.work_order.work_order import WorkOrder ,split_qty_based_on_batch_size
 
 class CapacityError(frappe.ValidationError):
@@ -19,13 +21,16 @@ class OverrideWorkOrder(WorkOrder):
 
         enable_capacity_planning = not cint(manufacturing_settings_doc.disable_capacity_planning)
         plan_days = cint(manufacturing_settings_doc.capacity_planning_for_days) or 30
-
-        for index, row in enumerate(self.operations):
-            qty = self.qty
-            while qty > 0:
-                qty = split_qty_based_on_batch_size(self, row, qty)
-                if row.job_card_qty > 0:
-                    self.prepare_data_for_job_card(row, index, plan_days, enable_capacity_planning)
+        for op in range(self.qty):
+            op_id = random_string(4) #'HNRirG'
+            for index, row in enumerate(self.operations):
+                row.custom_op_group_id = op_id
+                # qty = self.qty
+                qty = 1
+                while qty > 0:
+                    qty = split_qty_based_on_batch_size(self, row, qty)
+                    if row.job_card_qty > 0:
+                        self.prepare_data_for_job_card(row, index, plan_days, enable_capacity_planning)
 
         planned_end_date = self.operations and self.operations[-1].planned_end_time
         if planned_end_date:
@@ -75,7 +80,8 @@ def create_job_card(work_order, row, enable_capacity_planning=False, auto_create
             "wip_warehouse": work_order.wip_warehouse,
             "hour_rate": row.get("hour_rate"),
             "serial_no": row.get("serial_no"),
-            "custom_job_status":"Ready" if row.idx == 1 else "Pending"
+            "custom_job_status":"Ready" if row.idx == 1 else "Pending",
+            "custom_op_group_id":f"""{row.custom_op_group_id}-{row.get("sequence_id")}"""
         }
     )
 

@@ -7,8 +7,8 @@ def change_job_status(doc,methods = None):
     if doc.custom_job_status == "Completed":
         if doc.sequence_id != total_jobs:
             next_sequence_id  = int(doc.sequence_id) + 1
-
-            job_card_name = frappe.db.get_value('Job Card', {'work_order': doc.work_order,"sequence_id":next_sequence_id})
+            next_op_id = f"""{doc.custom_op_group_id[:-1]}{int(doc.custom_op_group_id[-1]) + 1}"""
+            job_card_name = frappe.db.get_value('Job Card', {'work_order': doc.work_order,"sequence_id":next_sequence_id,"custom_op_group_id":next_op_id})
 
             job_card_doc = frappe.get_doc('Job Card', job_card_name)
             job_card_doc.custom_job_status ="Ready"
