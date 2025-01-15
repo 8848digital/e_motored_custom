@@ -80,6 +80,11 @@ def create_job_card(work_order, row, enable_capacity_planning=False, auto_create
 
     item = frappe.db.get_value("Item",work_order.production_item,["custom_product_color","custom_volume","custom_net_weight_per_unit","weight_per_unit"],as_dict=1)
     price = frappe.db.get_value("Item Price",{'item_code':work_order.production_item,"price_list":"MRP"},["price_list_rate"],as_dict=1)
+    if price:
+        rate = price.price_list_rate
+    else:
+        rate = 0
+
     doc = frappe.new_doc("Job Card")
     doc.update(
         {
@@ -103,7 +108,7 @@ def create_job_card(work_order, row, enable_capacity_planning=False, auto_create
             "custom_inspection_template_parameters": custom_inspection_template_parameters,
             "custom_bike_color": item.custom_product_color,
             "custom_net_volume": item.custom_volume,
-            "custom_maximum_retail_price": price.price_list_rate,
+            "custom_maximum_retail_price": rate,
             "custom_net_weight": item.custom_net_weight_per_unit,
             "custom_gross_weight": item.weight_per_unit
         }
