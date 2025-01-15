@@ -10,6 +10,8 @@ from frappe.utils import (
 from frappe.utils import random_string
 
 from erpnext.manufacturing.doctype.work_order.work_order import WorkOrder ,split_qty_based_on_batch_size
+# from emotorad_p2p.emotorad_p2p.customizations.job_card.api import fetch_template_items
+
 
 class CapacityError(frappe.ValidationError):
 	pass
@@ -63,6 +65,21 @@ class OverrideWorkOrder(WorkOrder):
             row.db_update()
 
 def create_job_card(work_order, row, enable_capacity_planning=False, auto_create=False):
+    print(row.get("operation"))
+    if row.get("operation") != None:
+        custom_inspection_template = frappe.db.get_value('Operation',row.get("operation"),"custom_inspection_template")
+        if custom_inspection_template:
+            template_items = fetch_template_items(custom_inspection_template)
+            custom_inspection_template_parameters = set_template_items(template_items)
+        else:
+            custom_inspection_template_parameters=[]
+    else:
+        custom_inspection_template = ""
+        template_items = []
+        custom_inspection_template_parameters = []
+
+    item = frappe.db.get_value("Item",work_order.production_item,["custom_product_color","custom_volume","custom_net_weight_per_unit","weight_per_unit"],as_dict=1)
+    price = frappe.db.get_value("Item Price",{'item_code':work_order.production_item,"price_list":"MRP"},["price_list_rate"],as_dict=1)
     doc = frappe.new_doc("Job Card")
     doc.update(
         {
@@ -81,7 +98,14 @@ def create_job_card(work_order, row, enable_capacity_planning=False, auto_create
             "hour_rate": row.get("hour_rate"),
             "serial_no": row.get("serial_no"),
             "custom_job_status":"Ready" if row.idx == 1 else "Pending",
-            "custom_op_group_id":f"""{row.custom_op_group_id}-{row.get("sequence_id")}"""
+            "custom_op_group_id":f"""{row.custom_op_group_id}-{row.get("sequence_id")}""",
+            "custom_inspection_template": custom_inspection_template ,
+            "custom_inspection_template_parameters": custom_inspection_template_parameters,
+            "custom_bike_color": item.custom_product_color,
+            "custom_net_volume": item.custom_volume,
+            "custom_maximum_retail_price": price.price_list_rate,
+            "custom_net_weight": item.custom_net_weight_per_unit,
+            "custom_gross_weight": item.weight_per_unit
         }
     )
     if row.idx == 1:
@@ -103,3 +127,20 @@ def create_job_card(work_order, row, enable_capacity_planning=False, auto_create
         doc.db_set("status", "Open")
 
     return doc
+
+def set_template_items(template_items):
+    inspection_template_parameters = []
+    for item in template_items:
+        row_item = {
+            "checkpoint" : item['checkpoint'],
+            "spec_unit" : item['spec_unit'],
+            "check_method" : item['check_method'],
+            "pass" : item['pass'],  
+            "fail": item['fail']
+        }
+        inspection_template_parameters.append(row_item)
+    return inspection_template_parameters
+
+def fetch_template_items(template):
+    template_items = frappe.get_all('Custom Inspection Template Item',{'parent': template},['*'],order_by="idx")
+    return template_items
