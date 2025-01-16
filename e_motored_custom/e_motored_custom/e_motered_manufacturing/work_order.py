@@ -116,7 +116,7 @@ def create_job_card(work_order, row, enable_capacity_planning=False, auto_create
     if row.idx == 1:
         doc.append("time_logs",{"completed_qty":1})
 
-    if work_order.transfer_material_against == "Job Card" and not work_order.skip_transfer:
+    if not work_order.skip_transfer:
         doc.get_required_items()
 
     if auto_create:
