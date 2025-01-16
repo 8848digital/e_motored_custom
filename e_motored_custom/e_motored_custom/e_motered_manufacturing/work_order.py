@@ -10,6 +10,7 @@ from frappe.utils import (
 from frappe.utils import random_string
 
 from erpnext.manufacturing.doctype.work_order.work_order import WorkOrder ,split_qty_based_on_batch_size
+from emotorad.emotorad_manufacturing.custom.job_card.job_card import get_required_items
 # from emotorad_p2p.emotorad_p2p.customizations.job_card.api import fetch_template_items
 
 
@@ -65,7 +66,6 @@ class OverrideWorkOrder(WorkOrder):
             row.db_update()
 
 def create_job_card(work_order, row, enable_capacity_planning=False, auto_create=False):
-    print(row.get("operation"))
     if row.get("operation") != None:
         custom_inspection_template = frappe.db.get_value('Operation',row.get("operation"),"custom_inspection_template")
         if custom_inspection_template:
@@ -117,7 +117,7 @@ def create_job_card(work_order, row, enable_capacity_planning=False, auto_create
         doc.append("time_logs",{"completed_qty":1})
 
     if not work_order.skip_transfer:
-        doc.get_required_items()
+        get_required_items(doc)
 
     if auto_create:
         doc.flags.ignore_mandatory = True
